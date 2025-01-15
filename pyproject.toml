@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "SmartScore_ml"
+version = "0.0.1"
+description = ""
+authors = ["Nathan Probert <nathanprobert@rogers.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+smartscore-info-client = {git = "https://github.com/nathan-probert/smartscore-info-client.git", rev = "v1.1.2"}
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.15.0"
+ruff = "^0.1.0"
+pytest = "^8.3.3"
+
+[tool.ruff]
+exclude = ["**/__pycache__/*", "**/*.pyc", "output/*"]
+indent-width = 4
+target-version = "py312"
+src = ["smartscore", "tests"]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+  "BLE",
+  "E",
+  "F",
+  "I",
+  "PL",
+  "S",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  "D",
+  "S",
+  "PLR2004",
+  "ARG001",
+]
+
+[tool.ruff.lint.pylint]
+max-args = 8
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+pythonpath = ["smartscore_ml"]
+testpaths = ["tests/unit"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
