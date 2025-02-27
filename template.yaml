@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation stack for the GetAllPlayers Step Function and Lambda functions.
+
+Parameters:
+  ENV:
+    Type: String
+    Description: The environment (e.g., dev, prod)
+    Default: dev
+
+Resources:
+  # IAM Role for Lambda Execution
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+              - Effect: Allow
+                Action:
+                  - states:StartExecution
+                Resource: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:GetAllPlayersStateMachine"
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:Api-${ENV}"
+              - Effect: Allow
+                Action:
+                  - events:* # Consider restricting this based on your actual requirements
+                Resource: "*"
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource: "*"  # Applies to all resources
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                Resource: "*"
+
+  # Lambda Functions
+  MakePredictionsML:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "MakePredictionsML-${ENV}"
+      Handler: event_handler.handle_make_predictions
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: python3.12
+      Timeout: 10
+      MemorySize: 128
+      Environment:
+        Variables:
+          ENV: !Ref ENV
+      Code:
+        ZipFile: |
+          def lambda_handler(event, context):
+              return {"status": "Lambda function placeholder"}
+
+
+  # Lambda Log Groups
+  MakePredictionsMLLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/MakePredictionsML-${ENV}"
+      RetentionInDays: 1

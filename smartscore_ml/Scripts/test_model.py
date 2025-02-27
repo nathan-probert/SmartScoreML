@@ -12,8 +12,19 @@ def predict_top_players(model, data, num_players=3):
         probabilities = model(x_test).squeeze().numpy()
     data["probability"] = probabilities
 
-    top_players_per_day = data.groupby("date")[["date", "name", "probability", "scored"]].apply(
-        lambda group: group.nlargest(num_players, "probability")
+    # top_players_per_day = data.groupby("date")[["date", "name", "probability", "scored", "tims"]].apply(
+    #     lambda group: group.nlargest(num_players, "probability")
+    # )
+    # return top_players_per_day.reset_index(drop=True)
+    top_players_per_day = (
+        data[data["tims"] != 0]
+        .dropna(subset=["tims"])
+        .groupby("date")
+        .apply(
+            lambda group: group.groupby("tims")
+            .apply(lambda sub_group: sub_group.nlargest(1, "probability"))
+            .reset_index(drop=True)
+        )
     )
     return top_players_per_day.reset_index(drop=True)
 

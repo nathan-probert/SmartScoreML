@@ -30,10 +30,10 @@ def create_model(data, labels):
 
     # Define loss and optimizer
     criterion = nn.BCELoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.01)
 
     # Train the model
-    num_epochs = 200
+    num_epochs = 500
 
     patience = 20
     best_loss = float("inf")
