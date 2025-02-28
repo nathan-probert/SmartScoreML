@@ -9,54 +9,38 @@ env:
   ENV: dev
 
 jobs:
-#  deploy:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#
-#      - name: Install build tools
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get install -y build-essential  # Install gcc and make
-#
-#      - name: Set up Python
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: 3.x  # Specify your project's Python version
-#
-#      - name: Install Poetry
-#        run: |
-#          curl -sSL https://install.python-poetry.org | python3 -
-#
-#      - name: Install dependencies
-#        run: poetry install --no-root
-#
-#      - name: Configure AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v4
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: us-east-1
-#
-#      - name: Run deploy script
-#        run: |
-#          chmod +x build_scripts/deploy.sh
-#          ./build_scripts/deploy.sh
-
-
-  create-envfile:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Make envfile
-      uses: SpicyPizza/create-envfile@v3.0
-      with:
-        envkey_SECRETS: ${{ toJSON(secrets) }}
-        file_name: .env
-        fail_on_empty: false
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: cats
-        path: .
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential  # Install gcc and make
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x  # Specify your project's Python version
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install dependencies
+        run: poetry install --no-root
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Run deploy script
+        run: |
+          chmod +x build_scripts/deploy.sh
+          ./build_scripts/deploy.sh
