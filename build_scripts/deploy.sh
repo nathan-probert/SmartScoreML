@@ -102,7 +102,7 @@ update_lambda_code() {
 mkdir -p $OUTPUT_DIR
 
 # update dependencies
-poetry export -f requirements.txt --output $OUTPUT_DIR/requirements.txt --without-hashes --without dev
+poetry export -f requirements.txt --output $OUTPUT_DIR/requirements.txt --without-hashes --only main
 poetry run pip install --no-deps -r $OUTPUT_DIR/requirements.txt -t $OUTPUT_DIR
 rm -f $OUTPUT_DIR/requirements.txt
 

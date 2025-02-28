@@ -20,7 +20,6 @@ aws-lambda-powertools = "^3.4.1"
 pre-commit = "^4.0.1"
 ruff = "^0.5.5"
 pytest = "^8.2.2"
-torch = { url = "https://download.pytorch.org/whl/cu124/torch-2.5.1%2Bcu124-cp312-cp312-win_amd64.whl" }
 
 
 [tool.ruff]
