@@ -62,7 +62,7 @@ generate_zip_file() {
   cd $OUTPUT_DIR
 
   # Exclude any .zip files from the ZIP package
-  zip -r $KEY . -x "*.zip" -v
+  zip -r $KEY . -x "*.zip" > /dev/null
 
   cd ..
 
@@ -101,8 +101,8 @@ update_lambda_code() {
 mkdir -p $OUTPUT_DIR
 
 # update dependencies
-poetry export -f requirements.txt --output $OUTPUT_DIR/requirements.txt --without-hashes --only main
-poetry run pip install --no-deps --no-cache -r $OUTPUT_DIR/requirements.txt -t $OUTPUT_DIR -v
+poetry export -f requirements.txt --output $OUTPUT_DIR/requirements.txt --without-hashes
+poetry run pip install --no-deps -r $OUTPUT_DIR/requirements.txt -t $OUTPUT_DIR
 rm -f $OUTPUT_DIR/requirements.txt
 
 # update the code
@@ -110,7 +110,7 @@ cp -r $SOURCE_DIR/* $OUTPUT_DIR/
 
 # generate the ZIP file
 generate_zip_file
-exit(0)
+
 # create the CloudFormation stack for smartscore_ml
 generate_smartscore_ml_stack
 
