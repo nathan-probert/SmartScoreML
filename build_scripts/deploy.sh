@@ -59,45 +59,23 @@ generate_smartscore_ml_stack() {
 
 generate_zip_file() {
   echo "Creating ZIP package for Lambda..."
-
-  # Check if OUTPUT_DIR exists and has files to zip
-  if [ ! -d "$OUTPUT_DIR" ]; then
-    echo "Error: Output directory $OUTPUT_DIR does not exist."
-    exit 1
-  fi
-
-  cd $OUTPUT_DIR || { echo "Failed to navigate to $OUTPUT_DIR"; exit 1; }
-
-  # Check if the directory contains files
-  if [ "$(ls -A)" ]; then
-    echo "Directory $OUTPUT_DIR contains files. Proceeding with ZIP creation."
-  else
-    echo "Error: Directory $OUTPUT_DIR is empty."
-    exit 1
-  fi
+  cd $OUTPUT_DIR
 
   # Exclude any .zip files from the ZIP package
-  zip -r "$KEY" . -x "*.zip" || { echo "Failed to create ZIP file"; exit 1; }
+  zip -r $KEY . -x "*.zip" -v
 
-  cd .. || { echo "Failed to return to the previous directory"; exit 1; }
+  cd ..
 
-  # Verify ZIP file size
-  ZIP_FILE_SIZE=$(stat -c%s "$OUTPUT_DIR/$KEY" 2>/dev/null)
-  if [ $? -ne 0 ]; then
-    echo "ZIP file not found or failed to retrieve file size."
-    exit 1
-  fi
-
+  ZIP_FILE_SIZE=$(stat -c%s "$OUTPUT_DIR/$KEY")
   ZIP_FILE_SIZE_MB=$((ZIP_FILE_SIZE / 1024 / 1024))
 
   echo "Size of ZIP file: $ZIP_FILE_SIZE_MB MB"
 
   if [ $ZIP_FILE_SIZE_MB -gt $MAX_ZIP_SIZE_MB ]; then
-    echo "Error: The ZIP file exceeds $MAX_ZIP_SIZE_MB MB. Aborting deployment."
-    exit 1
+      echo "Error: The ZIP file exceeds $MAX_ZIP_SIZE_MB MB. Aborting deployment."
+      exit 1
   fi
 }
-
 
 
 update_lambda_code() {
