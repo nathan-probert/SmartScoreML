@@ -59,23 +59,45 @@ generate_smartscore_ml_stack() {
 
 generate_zip_file() {
   echo "Creating ZIP package for Lambda..."
-  cd $OUTPUT_DIR
+
+  # Check if OUTPUT_DIR exists and has files to zip
+  if [ ! -d "$OUTPUT_DIR" ]; then
+    echo "Error: Output directory $OUTPUT_DIR does not exist."
+    exit 1
+  fi
+
+  cd $OUTPUT_DIR || { echo "Failed to navigate to $OUTPUT_DIR"; exit 1; }
+
+  # Check if the directory contains files
+  if [ "$(ls -A)" ]; then
+    echo "Directory $OUTPUT_DIR contains files. Proceeding with ZIP creation."
+  else
+    echo "Error: Directory $OUTPUT_DIR is empty."
+    exit 1
+  fi
 
   # Exclude any .zip files from the ZIP package
-  zip -r $KEY . -x "*.zip" > /dev/null
+  zip -r "$KEY" . -x "*.zip" || { echo "Failed to create ZIP file"; exit 1; }
 
-  cd ..
+  cd .. || { echo "Failed to return to the previous directory"; exit 1; }
 
-  ZIP_FILE_SIZE=$(stat -c%s "$OUTPUT_DIR/$KEY")
+  # Verify ZIP file size
+  ZIP_FILE_SIZE=$(stat -c%s "$OUTPUT_DIR/$KEY" 2>/dev/null)
+  if [ $? -ne 0 ]; then
+    echo "ZIP file not found or failed to retrieve file size."
+    exit 1
+  fi
+
   ZIP_FILE_SIZE_MB=$((ZIP_FILE_SIZE / 1024 / 1024))
 
   echo "Size of ZIP file: $ZIP_FILE_SIZE_MB MB"
 
   if [ $ZIP_FILE_SIZE_MB -gt $MAX_ZIP_SIZE_MB ]; then
-      echo "Error: The ZIP file exceeds $MAX_ZIP_SIZE_MB MB. Aborting deployment."
-      exit 1
+    echo "Error: The ZIP file exceeds $MAX_ZIP_SIZE_MB MB. Aborting deployment."
+    exit 1
   fi
 }
+
 
 
 update_lambda_code() {
@@ -95,7 +117,6 @@ update_lambda_code() {
   done
 }
 
-
 # main
 
 # create the output directory
@@ -103,7 +124,7 @@ mkdir -p $OUTPUT_DIR
 
 # update dependencies
 poetry export -f requirements.txt --output $OUTPUT_DIR/requirements.txt --without-hashes --only main
-poetry run pip install --no-deps -r $OUTPUT_DIR/requirements.txt -t $OUTPUT_DIR
+poetry run pip install --no-deps --no-cache -r $OUTPUT_DIR/requirements.txt -t $OUTPUT_DIR -v
 rm -f $OUTPUT_DIR/requirements.txt
 
 # update the code
@@ -111,7 +132,7 @@ cp -r $SOURCE_DIR/* $OUTPUT_DIR/
 
 # generate the ZIP file
 generate_zip_file
-
+exit(0)
 # create the CloudFormation stack for smartscore_ml
 generate_smartscore_ml_stack
 
