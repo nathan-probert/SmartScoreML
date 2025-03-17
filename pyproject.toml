@@ -1,0 +1,67 @@
+[tool.poetry]
+name = "SmartScore_ml"
+version = "0.0.1"
+description = ""
+authors = ["Nathan Probert <nathanprobert@rogers.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12.0, <3.13.0"
+smartscore-info-client = {git = "https://github.com/nathan-probert/smartscore-info-client.git", rev = "v1.1.5"}
+boto3 = "^1.36.2"
+aws-lambda-powertools = "^3.4.1"
+onnxruntime = "^1.21.0"
+scikit-learn = "^1.6.1"
+pandas = "^2.2.3"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.0.1"
+ruff = "^0.5.5"
+pytest = "^8.2.2"
+torch = "^2.5.1"
+onnx = "^1.17.0"
+
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.9"
+
+[tool.ruff]
+exclude = ["**/__pycache__/*", "**/*.pyc", "output/*"]
+indent-width = 4
+target-version = "py312"
+src = ["smartscore", "tests"]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+  "BLE",
+  "E",
+  "F",
+  "I",
+  "PL",
+  "S",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  "D",
+  "S",
+  "PLR2004",
+  "ARG001",
+]
+
+[tool.ruff.lint.pylint]
+max-args = 8
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+pythonpath = ["smartscore_ml"]
+testpaths = ["tests/unit"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
