@@ -97,16 +97,20 @@ update_lambda_code() {
 
 # main
 
-# create the output directory
+# create empty output directory
+echo "Creating output directory..."
+rm -rf $OUTPUT_DIR
 mkdir -p $OUTPUT_DIR
 
 # update dependencies
+echo "Updating dependencies..."
 poetry export -f requirements.txt --output $OUTPUT_DIR/requirements.txt --without-hashes
 poetry run pip install --no-deps -r $OUTPUT_DIR/requirements.txt -t $OUTPUT_DIR
 rm -f $OUTPUT_DIR/requirements.txt
 
 # update the code
-cp -r $SOURCE_DIR/* $OUTPUT_DIR/
+echo "Updating the code..."
+cp -r $SOURCE_DIR/* $OUTPUT_DIR
 
 # generate the ZIP file
 generate_zip_file

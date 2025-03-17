@@ -20,6 +20,8 @@ pre-commit = "^4.0.1"
 ruff = "^0.5.5"
 pytest = "^8.2.2"
 
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.9"
 
 [tool.ruff]
 exclude = ["**/__pycache__/*", "**/*.pyc", "output/*"]
