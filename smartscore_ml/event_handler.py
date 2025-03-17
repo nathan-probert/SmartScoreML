@@ -9,7 +9,3 @@ def handle_make_predictions(event, context):
     entries = make_predictions(players)
 
     return {"statusCode": 200, "players": entries}
-
-
-if __name__ == "__main__":
-    response = handle_make_predictions(data, None)

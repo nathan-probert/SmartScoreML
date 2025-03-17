@@ -1,5 +1,5 @@
 import torch
-from shared import FEATURES, MODEL_PATH, MODEL_STRUCT, get_data
+from shared import FEATURES, MODEL_PATH, MODEL_STRUCT, ONNX_MODEL_PATH, get_data
 from sklearn.preprocessing import StandardScaler
 from test_model import test_model
 from torch import nn, optim
@@ -63,6 +63,7 @@ def create_model(data, labels):
             break
 
     torch.save(model.state_dict(), MODEL_PATH)
+    torch.onnx.export(model, x_train, ONNX_MODEL_PATH, opset_version=11)
 
 
 def main():

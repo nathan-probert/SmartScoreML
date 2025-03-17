@@ -1,4 +1,6 @@
 #!/bin/bash
+exit 0 # Currently onnx is way too large (and torch is even larger)
+# Might have to use layers or s3 bucket to store the model
 
 # one of {dev, prod}
 ENV=${ENV:-dev}  # If ENV is not set, default to "dev"
@@ -111,6 +113,11 @@ rm -f $OUTPUT_DIR/requirements.txt
 # update the code
 echo "Updating the code..."
 cp -r $SOURCE_DIR/* $OUTPUT_DIR
+rm -r $OUTPUT_DIR/lib/data.csv
+rm -r $OUTPUT_DIR/__pycache__
+rm -r $OUTPUT_DIR/bin
+rm -r $OUTPUT_DIR/Scripts
+
 
 # generate the ZIP file
 generate_zip_file

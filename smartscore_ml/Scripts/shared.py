@@ -11,6 +11,7 @@ from smartscore_ml.custom_model import EnhancedModel
 PATH = "smartscore_ml\\lib"
 DATA_PATH = f"{PATH}\\data.csv"
 MODEL_PATH = f"{PATH}\\model.pth"
+ONNX_MODEL_PATH = f"{PATH}\\model.onnx"
 
 # FEATURES = ["gpg", "hgpg", "five_gpg", "tgpg", "otga"]
 FEATURES = ["gpg", "hgpg", "five_gpg", "tgpg", "otga", "hppg", "otshga", "home"]
