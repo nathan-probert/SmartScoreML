@@ -8,10 +8,11 @@ import boto3
 import pandas as pd
 from smartscore_ml.custom_model import EnhancedModel
 
-PATH = "smartscore_ml\\lib"
-DATA_PATH = f"{PATH}\\data.csv"
-MODEL_PATH = f"{PATH}\\model.pth"
-ONNX_MODEL_PATH = f"{PATH}\\model.onnx"
+PATH = "smartscore_ml/lib"
+DATA_PATH = f"{PATH}/data.csv"
+SCALER_PATH = f"{PATH}/scaler.pkl"
+MODEL_PATH = f"{PATH}/model.pth"
+ONNX_MODEL_PATH = f"{PATH}/model.onnx"
 
 # FEATURES = ["gpg", "hgpg", "five_gpg", "tgpg", "otga"]
 FEATURES = ["gpg", "hgpg", "five_gpg", "tgpg", "otga", "hppg", "otshga", "home"]
@@ -62,18 +63,18 @@ def create_csv():
         writer.writerows(data)
 
 
-def get_data():
-    print("Do you want to download the data from the database? (y/n)")
-    choice = input().split()[0].lower()
-    if choice == "y":
+def get_data(download_from_db = False):
+    if download_from_db:
         create_csv()
     data = pd.read_csv(DATA_PATH, encoding="utf-8")
 
     # Clean the data
     for col in [col for col in data.columns if col not in ["date", "name"]]:
         data[col] = pd.to_numeric(data[col], errors="coerce")
-    data = data.dropna(subset=FEATURES + ["scored"])
+    data = data.dropna(subset=FEATURES + ["scored", "tims"])
+
     labels = data["scored"].astype(int)
+    data.pop("scored")
 
     # Display info about the data
     print()
